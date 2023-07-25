@@ -1,0 +1,44 @@
+>>> %Run -c $EDITOR_CONTENT
+
+MPY: soft reboot
+OLED_I2C1 Addr: 60
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:24:09)
+Logging: 1
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:24:24)
+Logging: 2
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:24:40)
+Logging: 3
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:24:56)
+Logging: 4
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:25:11)
+Logging: 5
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:25:27)
+Logging: 6
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:25:42)
+Logging: 7
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:25:58)
+Logging: 8
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:26:13)
+Logging: 9
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:26:29)
+Logging: 10
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:26:44)
+Logging: 11
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:27:00)
+Logging: 12
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:27:16)
+Logging: 13
+Temperature: 17.68152°C 15 seconds interval (2023-07-18 10:27:31)
+Logging: 14
+Temperature: 17.21338°C 15 seconds interval (2023-07-18 10:27:47)
+Logged: 15
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+Traceback (most recent call last):
+  File "<stdin>", line 301, in <module>
+KeyboardInterrupt: 
+
+MPY: soft reboot
+MicroPython v1.20.0 on 2023-04-26; Raspberry Pi Pico with RP2040
+Type "help()" for more information.
+>>> 
