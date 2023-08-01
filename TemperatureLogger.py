@@ -28,10 +28,10 @@ import binascii
 from ssd1306 import SSD1306_I2C
 from machine import Pin, I2C, ADC
 
-adcpin = 4
-sensor = machine.ADC(adcpin)
+adcTemperature = 4
+sensor = machine.ADC(adcTemperature)
 
-adc = ADC(Pin(26))
+adcPotentiometer = ADC(Pin(26))
 
 led = Pin(15, Pin.OUT)
 
@@ -244,16 +244,16 @@ onboardled = Pin("LED", Pin.OUT)
 onboardled.off()
 
 while True:
-    duty = adc.read_u16()
+    Potentiometer = adcPotentiometer.read_u16()
     # print (duty)
     
-    if duty > 0 and duty < 20000:
+    if Potentiometer > 0 and Potentiometer < 20000:
         interval = 15
         
-    if duty > 20000 and duty < 40000:
+    if Potentiometer > 20000 and Potentiometer < 40000:
         interval = 30
         
-    if duty > 40000 and duty < 65535:
+    if Potentiometer > 40000 and Potentiometer < 65535:
         interval = 60
         
     #datetimestamp = rtc.datetime()
