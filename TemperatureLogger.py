@@ -25,6 +25,7 @@ import time
 import utime
 import random
 import binascii
+import math
 from ssd1306 import SSD1306_I2C
 from machine import Pin, I2C, ADC
 
@@ -167,17 +168,27 @@ def centigradeToFahrenheit(centigrade):
     fahrenheit = centigrade * 9/5 + 32
     return fahrenheit
 
+def circle(cx,cy,r,c): # Centre (x,y), radius, colour
+    for angle in range(0, 90, 1): # 0 to 90 degrees in 1 step
+        y3=int(r*math.sin(math.radians(angle))) # 4 quadrants
+        x3=int(r*math.cos(math.radians(angle)))
+        OLED128X32.pixel(cx-x3,cy+y3,c)
+        OLED128X32.pixel(cx-x3,cy-y3,c)
+        OLED128X32.pixel(cx+x3,cy+y3,c)
+        OLED128X32.pixel(cx+x3,cy-y3,c)
+
 def displayInformationToOled(index):
     OLED128X32.fill(0)
     OLED128X32.text("Temperature  " + str(interval) + "s", 0, 0)
     
     if unit_type == "C":
-        OLED128X32.text(str(round(temperature,2)) + " " + chr(42) + "C", 0, 10)
+        OLED128X32.text(str(round(temperature,2)) + chr(32) + "C", 0, 10)
         print("Temperature: " + str(temperature) + "°C " + str(interval) + " seconds interval (" + datetimestring + ")")  
     else:
-        OLED128X32.text(str(round(centigradeToFahrenheit(temperature),2)) + " " + chr(42) + "F", 0, 10)
+        OLED128X32.text(str(round(centigradeToFahrenheit(temperature),2)) + chr(32) + "F", 0, 10)
         print("Temperature: " + str(centigradeToFahrenheit(temperature)) + "°F "  + str(interval) + " seconds interval (" + datetimestring + ")")
-        
+    circle(45,11,2,1)
+    
     OLED128X32.text(str(timestring), 88, 10)
 
     if logging == False:
