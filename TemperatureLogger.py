@@ -177,18 +177,40 @@ def circle(cx,cy,r,c): # Centre (x,y), radius, colour
         OLED128X32.pixel(cx+x3,cy+y3,c)
         OLED128X32.pixel(cx+x3,cy-y3,c)
 
+def displayDegreesSymbolToOled(temperatureString):
+    temperatureStringLength = len(temperatureString)
+        
+    if temperatureStringLength == 7:
+        circle(61,11,2,1)
+        
+    if temperatureStringLength == 6:
+        circle(53,11,2,1)
+        
+    if temperatureStringLength == 5:
+        circle(45,11,2,1)
+            
+    if temperatureStringLength == 4:
+        circle(37,11,2,1)
+            
 def displayInformationToOled(index):
     OLED128X32.fill(0)
     OLED128X32.text("Temperature  " + str(interval) + "s", 0, 0)
     
-    if unit_type == "C":
-        OLED128X32.text(str(round(temperature,2)) + chr(32) + "C", 0, 10)
-        print("Temperature: " + str(temperature) + "°C " + str(interval) + " seconds interval (" + datetimestring + ")")  
-    else:
-        OLED128X32.text(str(round(centigradeToFahrenheit(temperature),2)) + chr(32) + "F", 0, 10)
-        print("Temperature: " + str(centigradeToFahrenheit(temperature)) + "°F "  + str(interval) + " seconds interval (" + datetimestring + ")")
-    circle(45,11,2,1)
+    #temperature = -40.00
+    #temperature = 150.00
     
+    degreesC = "{:.2f}".format(temperature)
+    degreesF = "{:.2f}".format(centigradeToFahrenheit(temperature))
+    
+    if unit_type == "C":
+        OLED128X32.text(str(degreesC) + chr(32) + "C", 0, 10)
+        print("Temperature: " + str(temperature) + "°C " + str(interval) + " seconds interval (" + datetimestring + ")")
+        displayDegreesSymbolToOled(degreesC)
+    else:
+        OLED128X32.text(str(degreesF) + chr(32) + "F", 0, 10)
+        print("Temperature: " + str(centigradeToFahrenheit(temperature)) + "°F "  + str(interval) + " seconds interval (" + datetimestring + ")")
+        displayDegreesSymbolToOled(degreesF)
+        
     OLED128X32.text(str(timestring), 88, 10)
 
     if logging == False:
