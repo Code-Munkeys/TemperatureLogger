@@ -4,9 +4,9 @@ Designed and Developed by Franz Ayestaran - http://franz.ayestaran.co.uk
 
 Raspberry Pi Pico with external RTC
 
-![MainScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/b99f41a5-70cb-4808-b770-5c9e0655f9a0)
-
 ![SplashScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/f6138f1d-16f4-49f7-910c-7f0d40304b91)
+
+![MainScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/b99f41a5-70cb-4808-b770-5c9e0655f9a0)
 
 Usage:
 
