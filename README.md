@@ -6,8 +6,11 @@ Raspberry Pi Pico with external RTC
 
 ![SplashScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/a2cc1dbf-63b9-47ec-b51d-ba86650b9cf5)
 
+(Splash Screen)
+
 ![MainScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/b99f41a5-70cb-4808-b770-5c9e0655f9a0)
 
+(Main Screen)
 Usage:
 
 RED Button: Toggle Logging On / Off, GREEN Button: Toggle °C / °F, BLUE Button: Toggle OLED display On / Off. When the OLED Display is in the off state, the Pico onboard LED is illuminated to show the temperature logger is on.
