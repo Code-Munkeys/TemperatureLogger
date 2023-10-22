@@ -32,7 +32,7 @@ from ssd1306 import SSD1306_I2C
 from machine import Pin, I2C, ADC
 
 adcTemperature = 4
-sensor = machine.ADC(adcTemperature)
+temperatureSensor = machine.ADC(adcTemperature)
 
 adcPotentiometer = ADC(Pin(26))
 
@@ -163,10 +163,25 @@ def set_custom_time_dictionary(hour, minutes, seconds, subseconds):
     custom_time_dictionary['subsec'] = subseconds
     return custom_time_dictionary
 
+# RP2040 Datasheet, A microcontroller by Raspberry Pi
+
+# https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf?_gl=1*16bx0wt*_ga*NTgzOTA2NDMxLjE2ODg5MTAyNjI.*_ga_22FD70LWDS*MTY5Nzk2MzU1MC4yLjEuMTY5Nzk2MzU2NS4wLjAuMA..
+
+# 4.9.5. Temperature Sensor
+
+# The temperature sensor measures the Vbe voltage of a biased bipolar diode, connected to the fifth ADC channel
+# (AINSEL=4). Typically, Vbe = 0.706V at 27 degrees C, with a slope of -1.721mV per degree. Therefore the temperature
+# can be approximated as follows:
+
+# T = 27 - (ADC_voltage - 0.706)/0.001721
+
+# As the Vbe and the Vbe slope can vary over the temperature range, and from device to device, some user calibration
+# may be required if accurate measurements are required.
+
 def readTemperature():
-    adc_value = sensor.read_u16()
-    volt = (3.3/65535)*adc_value
-    temperature = 27 - (volt - 0.706)/0.001721
+    adc_value = temperatureSensor.read_u16()
+    ADC_voltage = (3.3/65535) * adc_value
+    temperature = 27 - (ADC_voltage - 0.706) / 0.001721
     return temperature
 
 def centigradeToFahrenheit(centigrade):
