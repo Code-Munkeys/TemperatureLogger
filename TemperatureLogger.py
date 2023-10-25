@@ -33,6 +33,10 @@ from machine import Pin, I2C, ADC
 
 adcTemperature = 4
 temperatureSensor = machine.ADC(adcTemperature)
+temperatureCurrent = 0
+
+#Calibration + / - in degrees centigrade
+temperatureCalibration = 0.0
 
 adcPotentiometer = ADC(Pin(26))
 
@@ -178,11 +182,11 @@ def set_custom_time_dictionary(hour, minutes, seconds, subseconds):
 # As the Vbe and the Vbe slope can vary over the temperature range, and from device to device, some user calibration
 # may be required if accurate measurements are required.
 
-def readTemperature():
+def readTemperature(temperatureCalibration):
     adc_value = temperatureSensor.read_u16()
     ADC_voltage = (3.3/65535) * adc_value
     temperature = 27 - (ADC_voltage - 0.706) / 0.001721
-    return temperature
+    return temperature + temperatureCalibration
 
 def centigradeToFahrenheit(centigrade):
     fahrenheit = centigrade * 9/5 + 32
@@ -212,7 +216,7 @@ def displayDegreesSymbolToOled(temperatureString):
     if temperatureStringLength == 4:
         circle(37,11,2,1)
             
-def displayInformationToOled(index):
+def displayInformationToOled(index, temperature):
     OLED128X32.fill(0)
     OLED128X32.text("Temperature  " + str(interval) + "s", 0, 0)
     
@@ -249,7 +253,7 @@ def displayInformationToOled(index):
     
     return index
 
-def logDataToCsvFile(csvFieldNamesWritten):
+def logDataToCsvFile(csvFieldNamesWritten, temperature):
     if logging:
         led.value(1)
         if csvFieldNamesWritten:
@@ -323,10 +327,10 @@ while True:
     datetimestring = datetimestamp
     timestring = str(rtc_external.read_time())
 
-    temperature = readTemperature()
+    temperatureCurrent = readTemperature(temperatureCalibration)
     
-    index = displayInformationToOled(index)       
-    csvFieldNamesWritten = logDataToCsvFile(csvFieldNamesWritten)
+    index = displayInformationToOled(index, temperatureCurrent)       
+    csvFieldNamesWritten = logDataToCsvFile(csvFieldNamesWritten, temperatureCurrent)
         
     timer = 0
     while timer < interval:
@@ -341,7 +345,7 @@ while True:
             else:
                 unit_type = "C"
             
-            index = displayInformationToOled(index)
+            index = displayInformationToOled(index, temperatureCurrent)
         
         if buttonRed.value():
             displayOnOff = False
@@ -352,13 +356,13 @@ while True:
             else:
                 logging = True
                 
-            index = displayInformationToOled(index)
+            index = displayInformationToOled(index, temperatureCurrent)
                 
         if buttonBlue.value():
             if displayOnOff:            
                 displayOnOff = False
                 onboardled.off()
-                index = displayInformationToOled(index)
+                index = displayInformationToOled(index, temperatureCurrent)
             else:
                 displayOnOff = True
                 OLED128X32.fill(0)         
