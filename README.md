@@ -14,7 +14,9 @@ Raspberry Pi Pico with external RTC
 
 Usage:
 
-RED Button: Toggle Logging On / Off, GREEN Button: Toggle °C / °F, BLUE Button: Toggle OLED display On / Off. When the OLED Display is in the off state, the Pico onboard LED is illuminated to show the temperature logger is on.
+When the Splash screen has displayed for 5 seconds, the User will be presented with a Calibration screen. The User can press the GREEN Button to increase and the RED Button to decrease the required temperature adjustment amount, when finished the User simply presses the BLUE Button to continue.
+
+When the Temperature screen is displayed the User can perform the following functions via the assigned inputs. RED Button: Toggle Logging On / Off, GREEN Button: Toggle °C / °F, BLUE Button: Toggle OLED display On / Off. When the OLED Display is in the off state, the Pico onboard LED is illuminated to show the temperature logger is on.
 
 POTENTIOMETER: Interval time <Left 60s> <Center 30s> <Right 15s> (s = seconds)
 

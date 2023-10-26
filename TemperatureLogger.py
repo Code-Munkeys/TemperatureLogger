@@ -9,6 +9,11 @@
 
 # Usage:
 #
+# When the Splash screen has displayed for 5 seconds, the User will be presented with a Calibration screen.
+# The User can press the GREEN Button to increase and the RED Button to decrease the required temperature adjustment
+# amount, when finished the User simply presses the BLUE Button to continue.
+#
+# When the Temperature screen is displayed the User can perform the following functions via the assigned inputs.
 # RED Button: Toggle Logging On / Off, GREEN Button: Toggle °C / °F, BLUE Button: Toggle OLED display On / Off.
 # When the OLED Display is in the off state, the Pico onboard LED is illuminated to show the temperature logger is on.
 #
@@ -27,6 +32,7 @@ import random
 import binascii
 import math
 import framebuf
+import sys
 
 from ssd1306 import SSD1306_I2C
 from machine import Pin, I2C, ADC
@@ -36,7 +42,7 @@ temperatureSensor = machine.ADC(adcTemperature)
 temperatureCurrent = 0
 
 #Calibration + / - in degrees centigrade
-temperatureCalibration = 0.0
+temperatureCalibration = 0
 
 adcPotentiometer = ADC(Pin(26))
 
@@ -64,7 +70,7 @@ RTC_EXTERNAL_I2C0_SCL = 21
 RTC_EXTERNAL_I2C0_ALARM_PIN = 3
 
 logging = False
-index = 1
+index = 0
 interval = 0
 csvFieldNamesWritten = False
 displayOnOff = False
@@ -80,6 +86,10 @@ custom_time_dictionary ['hour'] = 0
 custom_time_dictionary ['min'] = 0
 custom_time_dictionary ['sec'] = 0
 custom_time_dictionary ['subsec'] = 0
+
+oledLine1 = 1
+oledLine2 = 11
+oledLine3 = 21
 
 class ds3231(object):
 #            13:45:00 Mon 24 May 2021
@@ -201,21 +211,62 @@ def circle(cx,cy,r,c): # Centre (x,y), radius, colour
         OLED128X32.pixel(cx+x3,cy+y3,c)
         OLED128X32.pixel(cx+x3,cy-y3,c)
 
-def displayDegreesSymbolToOled(temperatureString):
+def displayDegreesSymbolToOled(temperatureString, yPosition):
     temperatureStringLength = len(temperatureString)
         
     if temperatureStringLength == 7:
-        circle(61,11,2,1)
+        circle(61,yPosition,2,1)
         
     if temperatureStringLength == 6:
-        circle(53,11,2,1)
+        circle(53,yPosition,2,1)
         
     if temperatureStringLength == 5:
-        circle(45,11,2,1)
+        circle(45,yPosition,2,1)
             
     if temperatureStringLength == 4:
-        circle(37,11,2,1)
+        circle(37,yPosition,2,1)
             
+def displayCalibrationToOled():
+    
+    calibrationAdjustment = 0
+    
+    while buttonBlue.value() == 0:
+        
+        OLED128X32.fill(0)
+        OLED128X32.text("Calibration  +/-", 0, 0)
+    
+        temperature = readTemperature(calibrationAdjustment)
+        
+        degreesC = "{:.2f}".format(temperature)
+        degreesF = "{:.2f}".format(centigradeToFahrenheit(temperature))
+        
+        OLED128X32.text(str(degreesC) + chr(32) + "C", 0, 10)
+        displayDegreesSymbolToOled(degreesC, oledLine2)
+        print("Calibration: " + str(temperature) + "°C ")
+        
+        OLED128X32.text(str(degreesF) + chr(32) + "F", 0, 20)
+        displayDegreesSymbolToOled(degreesF, oledLine3)
+        print("Calibration: " + str(centigradeToFahrenheit(temperature)) + "°F ")
+        OLED128X32.text(str(degreesF) + chr(32) + "F", 0, 20)
+        
+        OLED128X32.text(str(calibrationAdjustment) + chr(32), 88, 20)
+        print("Calibration Adjustment: " + str(calibrationAdjustment) + "°C ")
+        print("")
+        
+        timestring = str(rtc_external.read_time())
+        OLED128X32.text(str(timestring), 88, 10)
+        OLED128X32.show()
+        
+        if buttonGreen.value():
+            calibrationAdjustment = calibrationAdjustment + 1
+        
+        if buttonRed.value():
+            calibrationAdjustment = calibrationAdjustment - 1
+        
+        time.sleep(.1)
+    
+    return calibrationAdjustment
+
 def displayInformationToOled(index, temperature):
     OLED128X32.fill(0)
     OLED128X32.text("Temperature  " + str(interval) + "s", 0, 0)
@@ -228,12 +279,12 @@ def displayInformationToOled(index, temperature):
     
     if unit_type == "C":
         OLED128X32.text(str(degreesC) + chr(32) + "C", 0, 10)
-        print("Temperature: " + str(temperature) + "°C " + str(interval) + " seconds interval (" + datetimestring + ")")
-        displayDegreesSymbolToOled(degreesC)
+        print("Temperature: " + str(temperature) + "°C " + str(interval) + " seconds interval (" + datetimestring + ") Calibration Adjustment " + str(temperatureCalibration) + "°C")
+        displayDegreesSymbolToOled(degreesC, oledLine2)
     else:
         OLED128X32.text(str(degreesF) + chr(32) + "F", 0, 10)
-        print("Temperature: " + str(centigradeToFahrenheit(temperature)) + "°F "  + str(interval) + " seconds interval (" + datetimestring + ")")
-        displayDegreesSymbolToOled(degreesF)
+        print("Temperature: " + str(centigradeToFahrenheit(temperature)) + "°F "  + str(interval) + " seconds interval (" + datetimestring + ") Calibration Adjustment " + str(centigradeToFahrenheit(temperatureCalibration)) + "°F")
+        displayDegreesSymbolToOled(degreesF, oledLine2)
         
     OLED128X32.text(str(timestring), 88, 10)
 
@@ -260,13 +311,13 @@ def logDataToCsvFile(csvFieldNamesWritten, temperature):
             file=open("temperature" + filename + no_battery_rtc_filename_suffix + ".csv","a") # Append and opening of a CSV file in Write mode
         else:
             file=open("temperature" + filename + no_battery_rtc_filename_suffix + ".csv","w") # Append and opening of a CSV file in Write mode
-            file.write("temperature,unit,interval_seconds,datetime" + chr(10)) # Writing data in the opened file
+            file.write("temperature,unit,calibration_adjustment,interval_seconds,datetime" + chr(10)) # Writing data in the opened file
             csvFieldNamesWritten = True
             
         if unit_type == "C":
-            file.write(str(temperature) + ",centigrade," + str(interval) + "," + datetimestring + chr(10))
+            file.write(str(temperature) + ",centigrade," + str(temperatureCalibration) + "," + str(interval) + "," + datetimestring + chr(10))
         else:
-            file.write(str(centigradeToFahrenheit(temperature)) + ",fahrenheit," + str(interval) + "," + datetimestring + chr(10))
+            file.write(str(centigradeToFahrenheit(temperature)) + ",fahrenheit,"  + str(centigradeToFahrenheit(temperatureCalibration)) + "," + str(interval) + "," + datetimestring + chr(10))
     
         file.close()
         time.sleep(0.5)
@@ -304,6 +355,11 @@ OLED128X32.fill(0)
 OLED128X32.blit(splashScreen, 0, 0)
 OLED128X32.show()
 time.sleep(5)
+
+temperatureCalibration = displayCalibrationToOled()
+
+while buttonBlue.value() == 1:
+    displayOnOff = False
 
 while True:
     Potentiometer = adcPotentiometer.read_u16()
@@ -370,4 +426,5 @@ while True:
                 onboardled.on()
                  
         time.sleep(1)
+        #sys.exit()
         
