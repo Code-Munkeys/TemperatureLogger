@@ -8,6 +8,10 @@ Raspberry Pi Pico with external RTC
 
 (Splash Screen)
 
+![CalibrationScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/dbb6d0c4-f885-4447-8070-91ca05a930c5)
+
+(Calibration Screen)
+
 ![MainScreen](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/b99f41a5-70cb-4808-b770-5c9e0655f9a0)
 
 (Main Screen)
