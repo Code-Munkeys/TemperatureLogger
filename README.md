@@ -16,6 +16,10 @@ Raspberry Pi Pico with external RTC
 
 (Main Screen)
 
+![TemperatureGraph](https://github.com/Code-Munkeys/TemperatureLogger/assets/1928315/96b69977-865b-4812-9188-341714147959)
+
+(Example CSV Test Data)
+
 Usage:
 
 When the Splash screen has displayed for 5 seconds, the User will be presented with a Calibration screen. The User can press the GREEN Button to increase and the RED Button to decrease the required temperature adjustment amount, when finished the User simply presses the BLUE Button to continue.
