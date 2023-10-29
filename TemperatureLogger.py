@@ -46,7 +46,10 @@ temperatureCalibration = 0
 
 adcPotentiometer = ADC(Pin(26))
 
-led = Pin(15, Pin.OUT)
+loggingLed = Pin(15, Pin.OUT)
+
+onboardLed = Pin("LED", Pin.OUT)
+onboardLed.off()
 
 w = 128
 h = 32
@@ -229,6 +232,8 @@ def displayDegreesSymbolToOled(temperatureString, yPosition):
 def displayCalibrationToOled():
     
     calibrationAdjustment = 0
+    buttonRed_Prev_State = False
+    buttonGreen_Prev_State = False
     
     while buttonBlue.value() == 0:
         
@@ -257,11 +262,17 @@ def displayCalibrationToOled():
         OLED128X32.text(str(timestring), 88, 10)
         OLED128X32.show()
         
-        if buttonGreen.value():
-            calibrationAdjustment = calibrationAdjustment + 1
-        
-        if buttonRed.value():
+        if (buttonRed.value() and (buttonRed_Prev_State == False)):
             calibrationAdjustment = calibrationAdjustment - 1
+            buttonRed_Prev_State = True
+        elif (buttonRed.value() == False) and (buttonRed_Prev_State == True):
+            buttonRed_Prev_State = False
+
+        if (buttonGreen.value() and (buttonGreen_Prev_State == False)):
+            calibrationAdjustment = calibrationAdjustment + 1
+            buttonGreen_Prev_State = True
+        elif (buttonGreen.value() == False) and (buttonGreen_Prev_State == True):
+            buttonGreen_Prev_State = False
         
         time.sleep(.1)
     
@@ -306,7 +317,7 @@ def displayInformationToOled(index, temperature):
 
 def logDataToCsvFile(csvFieldNamesWritten, temperature):
     if logging:
-        led.value(1)
+        loggingLed.value(1)
         if csvFieldNamesWritten:
             file=open("temperature" + filename + no_battery_rtc_filename_suffix + ".csv","a") # Append and opening of a CSV file in Write mode
         else:
@@ -321,7 +332,7 @@ def logDataToCsvFile(csvFieldNamesWritten, temperature):
     
         file.close()
         time.sleep(0.5)
-        led.value(0)
+        loggingLed.value(0)
         
         return csvFieldNamesWritten
 
@@ -347,9 +358,6 @@ no_battery_rtc_filename_suffix = ""
 #print("custom_date_dictionary: " + str(set_custom_date_dictionary(datetimestamp[0],datetimestamp[1],datetimestamp[2],datetimestamp[3])))
 #print("custom_time_dictionary: " + str(set_custom_time_dictionary(datetimestamp[4],datetimestamp[5],datetimestamp[6],datetimestamp[7])))
 #print("rtc.datetime(): " + str(set_pico_rtc(custom_date_dictionary['year'], custom_date_dictionary['month'], custom_date_dictionary['day'], custom_date_dictionary['weekday'], custom_time_dictionary['hour'], custom_time_dictionary['min'], custom_time_dictionary['sec'], custom_time_dictionary['subsec'])))
-
-onboardled = Pin("LED", Pin.OUT)
-onboardled.off()
 
 OLED128X32.fill(0)
 OLED128X32.blit(splashScreen, 0, 0)
@@ -405,7 +413,7 @@ while True:
         
         if buttonRed.value():
             displayOnOff = False
-            onboardled.off()
+            onboardLed.off()
             
             if logging:
                 logging = False
@@ -417,13 +425,13 @@ while True:
         if buttonBlue.value():
             if displayOnOff:            
                 displayOnOff = False
-                onboardled.off()
+                onboardLed.off()
                 index = displayInformationToOled(index, temperatureCurrent)
             else:
                 displayOnOff = True
                 OLED128X32.fill(0)         
                 OLED128X32.show()
-                onboardled.on()
+                onboardLed.on()
                  
         time.sleep(1)
         #sys.exit()

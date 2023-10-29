@@ -12,12 +12,14 @@ file = open("TemperatureGraph.csv", "r")
 
 # Transforms CSV file data into arrays xAxis and yAxis that are required for graph plotting
 xAxis = []; yAxis = []; index = 0
+unitType = ""
 
 for data in file:
     data = data.replace("\n", "")
     data = data.split(",")
     
-    temperature = data[0] + chr(176) #Add the degrees symbol to the retrieved data 
+    temperature = data[0] + chr(176) #Add the degrees symbol to the retrieved data
+    unitType = data[1]
     datetime = data[4]
     
     #Filter out the CSV header names
@@ -36,6 +38,6 @@ file.close()
 plt.plot(xAxis,yAxis, '-o')
 plt.title('Temperature Logger Data Graph')
 plt.xlabel('Time (HH:MM:SS)')
-plt.ylabel('Temperature in Degrees Centigrade')
+plt.ylabel('Temperature in degrees ' + unitType)
 plt.grid()
 plt.show()
