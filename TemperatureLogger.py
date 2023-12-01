@@ -402,7 +402,7 @@ while True:
 
         if buttonGreen.value():
             displayOnOff = False
-            onboardled.off()
+            onboardLed.off()
                 
             if unit_type == "C":
                 unit_type = "F"       
